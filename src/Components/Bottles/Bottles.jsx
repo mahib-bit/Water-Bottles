@@ -2,10 +2,15 @@ import 'react';
 import { use } from 'react';
 import Bottle from '../Bottle/Bottle';
 import './Bottles.css';
+import { useState } from 'react';
 
 const Bottles = ({ bottlesPromise }) => {
     const bottles = use(bottlesPromise);
-    // console.log(bottles)
+
+    const [cart, setCart] = useState([]);
+    const handleCart = (bottle) => {
+        console.log(`Bottle is added to cart!!`, bottle)
+    }
 
     return (
         <div>
@@ -15,6 +20,7 @@ const Bottles = ({ bottlesPromise }) => {
                     <Bottle
                         key={bottle.id}
                         bottle={bottle}
+                        handleCart={handleCart}
                     />
                 ))}
             </div>
