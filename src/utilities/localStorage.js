@@ -1,25 +1,41 @@
+/**
+ * 1. to get something from local storage, you will get it as a string
+ * 2. convert this to javascript object/array
+*/
+
 const getCartFromLocalStorage = () => {
-    const storedCartString = localStorage.getItem('Cart');
+    const storedCartString = localStorage.getItem('cart');
 
     if (storedCartString) {
         const storedCart = JSON.parse(storedCartString);
         return storedCart;
     }
-    else {
-        return [];
-    } 
+    return [];
 }
 
 const saveCartToLocalStorage = cart => {
     const cartStringified = JSON.stringify(cart);
-    localStorage.setItem('Cart', cartStringified);
+    localStorage.setItem('cart', cartStringified);
 }
 
-const addItemToCartInLocalStorage = id => {
-   const cart = getCartFromLocalStorage();
-   const newCart = [...cart, id];
-   saveCartToLocalStorage(newCart);
+const addItemToCartLocalStorage = id => {
+    const cart = getCartFromLocalStorage();
+    const newCart = [...cart, id];
+
+    // save new cart to the local storage
+    saveCartToLocalStorage(newCart);
 }
 
-export { getCartFromLocalStorage as getStoredCart, 
-    addItemToCartInLocalStorage as addToStoredCart };
+const removeFromLocalStorage = id => {
+    const storedCart = getCartFromLocalStorage();
+    const remainingCart = storedCart.filter(storedId => storedId !== id);
+    saveCartToLocalStorage(remainingCart);
+}
+
+// const add = (a, b) => a + b;
+
+export {
+    getCartFromLocalStorage as getStoreCart,
+    addItemToCartLocalStorage as addToStoredCart,
+    removeFromLocalStorage as removeFromCart
+}

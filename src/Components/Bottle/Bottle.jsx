@@ -1,15 +1,17 @@
-import 'react';
+import React from 'react';
 import './Bottle.css';
 
-const Bottle = ({ bottle , handleCart }) => {
+const Bottle = ({ bottle, handleAddToCart }) => {
+    const { img, name, price, stock } = bottle;
+    // console.log(bottle);
 
     return (
-        <div className="card">
-            <img src={bottle.img} alt="" />
-            <h4>Name : {bottle.name}</h4>
-            <p>Price : ${bottle.price.toFixed(2)} Rating : {bottle.ratings} *</p>
-            <p>Remaining : {bottle.stock}</p>
-            <button onClick={() => handleCart(bottle)}>Add to Cart</button>
+        <div className='card bottle'>
+            <img src={img} alt="" />
+            <h3>{name}</h3>
+            <p>${price}</p>
+            <p>{stock} remaining</p>
+            <button onClick={() => handleAddToCart(bottle)}>Buy Now</button>
         </div>
     );
 };

@@ -1,58 +1,66 @@
-import { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import Bottle from '../Bottle/Bottle';
 import './Bottles.css';
-import { addToStoredCart, getStoredCart } from '../../utilities/localStorage';
+import { addToStoredCart, getStoreCart, removeFromCart } from '../../utilities/localstorage';
+import Cart from '../Cart/Cart';
 
 const Bottles = ({ bottlesPromise }) => {
-    const [bottles, setBottles] = useState([]);
-
-    useEffect(() => {
-        let mounted = true;
-        bottlesPromise
-            .then(data => {
-                if (mounted) setBottles(data);
-            })
-            .catch(() => {
-                if (mounted) setBottles([]);
-            });
-        return () => { mounted = false };
-    }, [bottlesPromise]);
-
     const [cart, setCart] = useState([]);
 
-    // Hydrate cart from stored ids once bottles are loaded
+    const bottles = use(bottlesPromise);
+
+    // useEffect
     useEffect(() => {
-        const storedCartIds = getStoredCart();
-        if (!storedCartIds || storedCartIds.length === 0 || bottles.length === 0) return;
+        const storedCartIds = getStoreCart();
+        // console.log(storedCartIds, bottles);
 
         const storedCart = [];
-        for (const id of storedCartIds) {
-            const cartBottle = bottles.find(b => b.id === id);
-            if (cartBottle) storedCart.push(cartBottle);
-        }
-        setCart(storedCart);
-    }, [bottles]);
 
-    const handleCart = (bottle) => {
+        for (const id of storedCartIds) {
+            // console.log(id);
+            const cartBottle = bottles.find(bottle => bottle.id === id);
+            if (cartBottle) {
+                storedCart.push(cartBottle);
+            }
+        }
+
+        console.log('stored cart', storedCart);
+        setCart(storedCart);
+
+    }, [bottles])
+
+
+    const handleAddToCart = (bottle) => {
+        // console.log('bottle will be added to the cart', bottle);
         const newCart = [...cart, bottle];
         setCart(newCart);
-        addToStoredCart(bottle.id);
-    };
 
-   
+        // save the bottle id in the storage
+        addToStoredCart(bottle.id);
+    }
+
+    const handleRemoveFromCart = id => {
+        console.log('remove item from the cart', id)
+
+        const remainingCart = cart.filter(bottle => bottle.id !== id);
+        setCart(remainingCart);
+        removeFromCart(id);
+    }
+
+    // console.log(bottles);
 
     return (
         <div>
-            <h3>Bottles : {bottles.length}</h3>
-            <p>Cart Items: {cart.length}</p>
-            <div className="grid">  
-                {bottles.map(bottle => (
-                    <Bottle
+            <h3>Bottles: {bottles.length}</h3>
+            <p>Added to cart: {cart.length}</p>
+            <Cart cart={cart} handleRemoveFromCart={handleRemoveFromCart}></Cart>
+            <div className='bottles-container'>
+                {
+                    bottles.map(bottle => <Bottle
                         key={bottle.id}
-                        bottle={bottle}
-                        handleCart={handleCart}
-                    />
-                ))}
+                        handleAddToCart={handleAddToCart}
+                        bottle={bottle}></Bottle>)
+                }
             </div>
         </div>
     );
